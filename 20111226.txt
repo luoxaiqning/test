@@ -1,0 +1,16 @@
+   CALL FUNCTION 'ENQUEUE_EZTMEDC'
+      EXPORTING
+        mode_ztmedc    = 'E'
+        mandt          = sy-mandt
+      EXCEPTIONS
+        foreign_lock   = 1
+        system_failure = 2
+        OTHERS         = 3.
+    MODIFY ztaacz01 FROM TABLE t_ztaacz01_update.
+    IF sy-subrc = 0.
+      COMMIT WORK AND WAIT.
+    ELSE.
+      MOVE t_ztaacz01_update TO t_update_error.
+      APPEND t_update_error.
+    ENDIF.
+    CALL FUNCTION 'DEQUEUE_ALL'.    
